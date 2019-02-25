@@ -1,8 +1,8 @@
 package com.hyoseog.effectivejava.chapter3.item10;
 
-
 public final class PhoneNumber {
     private final short areaCode, prefix, lineNum;
+    private int hashCode; // 자동으로 0으로 초기화
 
     public PhoneNumber(short areaCode, short prefix, short lineNum) {
         this.areaCode = rangeCheck(areaCode,999, "지역코드");
@@ -33,5 +33,21 @@ public final class PhoneNumber {
         // 4. 입력 객체와 자기 잣긴의 대응되는 '핵심' 필드들이 모두 일치하는지 하나씩 검사한다.
         return pn.lineNum == lineNum && pn.prefix == prefix
                 && pn.areaCode == areaCode;
+    }
+
+    // Item 11. equals 를 재정의 했다면 hashcode 도 재정의할 것
+    // 여러가지 방법이 있지만..
+    // 클래스가 불변이고 해시코드를 계산하는 비용이 크다면, 매번 새로 계산하기 보다는
+    // 캐싱하는 방식을 고려해야함.
+    @Override
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = Short.hashCode(areaCode);
+            result = 31 * result + Short.hashCode(prefix);
+            result = 31 * result + Short.hashCode(lineNum);
+            hashCode = result;
+        }
+        return result;
     }
 }
